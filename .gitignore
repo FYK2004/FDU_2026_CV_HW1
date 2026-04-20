@@ -1,0 +1,28 @@
+.venv/
+__pycache__/
+*.py[cod]
+
+# IDE
+.vscode/
+
+# Assignment handout / personal notes
+HW1_*.pdf
+HW1_*fitz*.txt
+
+# Datasets (downloaded)
+data/
+
+# Checkpoints / trained weights
+checkpoints/
+*.npz
+
+# Local outputs (keep only selected artifacts)
+artifacts/*
+!artifacts/search_results.json
+!artifacts/search_heatmap_*.png
+!artifacts/curves_*.png
+!artifacts/history_*.json
+
+# OS cruft
+Thumbs.db
+Desktop.ini
