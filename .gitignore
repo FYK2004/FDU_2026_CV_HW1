@@ -22,6 +22,9 @@ artifacts/*
 !artifacts/search_heatmap_*.png
 !artifacts/curves_*.png
 !artifacts/history_*.json
+!artifacts/confusion_matrix.png
+!artifacts/first_layer_weights.png
+!artifacts/error_cases.png
 
 # OS cruft
 Thumbs.db
