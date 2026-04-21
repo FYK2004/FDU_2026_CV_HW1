@@ -1,6 +1,25 @@
 
 # FDU 2026 春季 计算机视觉 HW1（Fashion-MNIST / NumPy）
 
+## 项目结构
+
+- **`src/hw1/`**：核心实现（数据读取、模型、训练与评估逻辑）
+  - `data.py`：Fashion-MNIST 下载/加载与 DataLoader
+  - `model.py`：两层 MLP（含激活函数与前向/反向）
+  - `train.py`：训练循环（与脚本入口解耦的训练实现）
+  - `evaluate.py`：Accuracy / 混淆矩阵等评估工具
+- **`scripts/`**：可直接运行的实验入口脚本
+  - `train.py`：训练并保存验证集最优模型
+  - `search.py`：网格搜索超参并保存最优模型与结果
+  - `test.py`：加载最优模型做测试集评估
+  - `error_analysis.py`：导出错分样本图
+  - `plot_search_results.py`：将搜索结果可视化为热力图
+  - `visualize_weights.py`：可视化第一层权重
+- **仓库根目录其他文件**
+  - `.gitignore`：Git 忽略规则
+  - `requirements.txt`：依赖列表
+  - `CV_HW1.pdf`：作业报告
+
 ## 环境依赖
 
 ```powershell
