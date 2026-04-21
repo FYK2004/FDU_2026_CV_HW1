@@ -8,33 +8,30 @@ import numpy as np
 from .evaluate import evaluate_model
 from .model import OneHiddenLayerMLP
 
-# ---- LR scheduler helpers ----
 def _lr_exp(base_lr: float, lr_decay: float, epoch: int, min_lr: float) -> float:
     return max(base_lr * (lr_decay**epoch), min_lr)
 
 
 def _lr_cosine(base_lr: float, epoch: int, total_epochs: int, min_lr: float) -> float:
-    # Cosine annealing from base_lr to min_lr.
+    # 余弦退火：从初始学习率平滑降到最小学习率
     if total_epochs <= 1:
         return max(base_lr, min_lr)
     t = epoch / float(total_epochs - 1)  # 0 -> 1
     return float(min_lr + 0.5 * (base_lr - min_lr) * (1.0 + np.cos(np.pi * t)))
 
 
-# 训练器配置，包含训练超参数
 @dataclass
 class TrainerConfig:
-    epochs: int = 20           # 训练轮数
-    batch_size: int = 128      # 每批样本数
+    epochs: int = 20
+    batch_size: int = 128
     learning_rate: float = 0.05
-    lr_decay: float = 0.95     # 学习率衰减
-    lr_schedule: str = "cosine"  # exp/cosine
+    lr_decay: float = 0.95
+    lr_schedule: str = "cosine"  # 指数衰减 / 余弦退火
     min_lr: float = 1e-5
-    weight_decay: float = 1e-4 # L2正则
+    weight_decay: float = 1e-4
     seed: int = 42
-    save_path: str = "checkpoints/best_model.npz"  # 最优模型保存路径
+    save_path: str = "checkpoints/best_model.npz"
 
-# 小批量数据生成器
 def _iterate_minibatches(
     x: np.ndarray,
     y: np.ndarray,
@@ -47,7 +44,6 @@ def _iterate_minibatches(
         batch_idx = idx[start : start + batch_size]
         yield x[batch_idx], y[batch_idx]
 
-# 训练主流程
 def train_model(
     model: OneHiddenLayerMLP,
     x_train: np.ndarray,
@@ -77,27 +73,24 @@ def train_model(
             raise ValueError(f"Unsupported lr_schedule: {cfg.lr_schedule}")
         losses = []
 
-        # 遍历所有小批量
         for xb, yb in _iterate_minibatches(x_train, y_train, cfg.batch_size, rng):
-            cache = model.forward(xb)  # 前向传播
-            loss = model.backward(cache, yb, weight_decay=cfg.weight_decay)  # 反向传播
-            model.step(lr)  # 参数更新
+            cache = model.forward(xb)
+            loss = model.backward(cache, yb, weight_decay=cfg.weight_decay)
+            model.step(lr)
             losses.append(loss)
 
         train_loss = float(np.mean(losses))
-        val_loss, val_acc = evaluate_model(model, x_val, y_val)  # 验证集评估
+        val_loss, val_acc = evaluate_model(model, x_val, y_val)
 
         history["train_loss"].append(train_loss)
         history["val_loss"].append(val_loss)
         history["val_acc"].append(val_acc)
         history["lr"].append(lr)
 
-        # 保存最优模型
         if val_acc > best_val_acc:
             best_val_acc = val_acc
             model.save(str(save_path))
 
-        # 只在每10个epoch、首尾epoch输出
         if (epoch + 1) % 10 == 0 or epoch == 0 or (epoch + 1) == cfg.epochs:
             print(
                 f"Epoch {epoch + 1:02d}/{cfg.epochs} | "

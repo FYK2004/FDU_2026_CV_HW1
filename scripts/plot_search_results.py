@@ -1,4 +1,3 @@
-# 绘制超参数搜索结果对比图
 import argparse
 import json
 import matplotlib.pyplot as plt
@@ -46,7 +45,6 @@ def plot_search_results(results_path: str, *, all_plots: bool = False) -> None:
     learning_rates = _sorted_unique(item["config"]["learning_rate"] for item in results)
     weight_decays = _sorted_unique(item["config"]["weight_decay"] for item in results)
 
-    # Build fast lookup for exact grid points
     acc_map: Dict[Tuple, float] = {}
     for item in results:
         cfg = item["config"]
@@ -57,7 +55,6 @@ def plot_search_results(results_path: str, *, all_plots: bool = False) -> None:
     vmin = min(acc_map.values()) if acc_map else 0.0
     vmax = max(acc_map.values()) if acc_map else 1.0
 
-    # (1.5) Per-activation heatmap: one figure per activation (subplots over hidden_dim1)
     for act in activations:
         fig_a, axes_a = plt.subplots(
             nrows=1,
@@ -91,7 +88,8 @@ def plot_search_results(results_path: str, *, all_plots: bool = False) -> None:
             for i in range(len(learning_rates)):
                 for j in range(len(weight_decays)):
                     val = grid[i][j]
-                    if val == val:  # not NaN
+                    # 数值为“非数值”时，会出现“自身不等于自身”
+                    if val == val:
                         ax.text(
                             j,
                             i,
@@ -115,7 +113,6 @@ def plot_search_results(results_path: str, *, all_plots: bool = False) -> None:
         print(f"Saved per-activation heatmaps to: {out_dir}")
         return
 
-    # (2) Top-K bar chart over all configurations
     ranked = sorted(results, key=lambda x: float(x["best_val_acc"]), reverse=True)
     top_k = min(15, len(ranked))
     top_items = ranked[:top_k]
@@ -134,19 +131,18 @@ def plot_search_results(results_path: str, *, all_plots: bool = False) -> None:
     fig2.savefig(out_path2, dpi=200, bbox_inches="tight")
     plt.close(fig2)
 
-    # (2.5) One-shot intuitive view: scatter/bubble plot over lr × wd
-    # x=learning_rate (log), y=weight_decay (log), color=acc, size=hidden_dim1, marker=activation
+    # 一个更直观的总览图：学习率 × 权重衰减 的散点（颜色=验证准确率，大小=隐藏层宽度，形状=激活函数）
     marker_map = {
         "relu": "o",
         "tanh": "s",
         "sigmoid": "^",
     }
-    # Fallback marker for any unexpected activation names
+    # 遇到未知激活函数时用备用点形
     default_markers = ["o", "s", "^", "D", "P", "X", "v", "<", ">", "*"]
 
     fig25, ax25 = plt.subplots(figsize=(9.5, 6.2))
 
-    # normalize point sizes for readability
+    # 点大小做个缩放，避免看起来差不多
     hmin = min(hidden_dims) if hidden_dims else 1
     hmax = max(hidden_dims) if hidden_dims else 1
     def _size(h):
@@ -157,7 +153,7 @@ def plot_search_results(results_path: str, *, all_plots: bool = False) -> None:
     vmin2 = min(acc_map.values()) if acc_map else 0.0
     vmax2 = max(acc_map.values()) if acc_map else 1.0
 
-    # keep stable per-activation plotting (and legend)
+    # 每种激活函数单独画一层，图例更清楚
     used_markers = {}
     for idx, act in enumerate(activations):
         mk = marker_map.get(act)
@@ -200,8 +196,7 @@ def plot_search_results(results_path: str, *, all_plots: bool = False) -> None:
     cbar25.set_label("best_val_acc")
     ax25.legend(loc="best", frameon=True)
 
-    # size legend for hidden_dim1
-    # show at most 3 reference sizes
+    # 隐藏层宽度的大小图例（最多放 3 个参照）
     ref_dims = hidden_dims if len(hidden_dims) <= 3 else [hidden_dims[0], hidden_dims[len(hidden_dims)//2], hidden_dims[-1]]
     handles = [
         ax25.scatter([], [], s=_size(h), c="none", edgecolors="black", marker="o", linewidths=0.6)
@@ -216,7 +211,7 @@ def plot_search_results(results_path: str, *, all_plots: bool = False) -> None:
     fig25.savefig(out_path25, dpi=200, bbox_inches="tight")
     plt.close(fig25)
 
-    # (2.6) Per-activation scatter: one figure per activation
+    # 每种激活函数单独一张散点图
     for idx, act in enumerate(activations):
         mk = used_markers.get(act, default_markers[idx % len(default_markers)])
 
@@ -253,7 +248,7 @@ def plot_search_results(results_path: str, *, all_plots: bool = False) -> None:
         cbar26 = fig26.colorbar(sc26, ax=ax26, pad=0.02)
         cbar26.set_label("best_val_acc")
 
-        # size legend for hidden_dim1
+        # 隐藏层宽度的大小图例
         handles = [
             ax26.scatter([], [], s=_size(h), c="none", edgecolors="black", marker="o", linewidths=0.7)
             for h in ref_dims
@@ -266,7 +261,7 @@ def plot_search_results(results_path: str, *, all_plots: bool = False) -> None:
         fig26.savefig(out_path26, dpi=200, bbox_inches="tight")
         plt.close(fig26)
 
-    # (3) Keep the original simple comparison (hidden_dim vs best acc) but make it explicit:
+    # 隐藏层宽度的简单对比：对每种激活函数，取该宽度下的最优验证准确率
     fig3, ax3 = plt.subplots()
     for act in activations:
         accs_hd = []

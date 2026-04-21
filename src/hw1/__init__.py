@@ -1,4 +1,3 @@
-# 导入各模块主要接口，便于外部调用
 from .data import load_fashion_mnist
 from .model import OneHiddenLayerMLP
 from .train import TrainerConfig, train_model

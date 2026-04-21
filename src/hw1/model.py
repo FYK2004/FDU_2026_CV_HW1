@@ -4,17 +4,15 @@ from dataclasses import dataclass
 
 import numpy as np
 
-# 权重随机初始化（Xavier初始化）
 def _xavier_init(fan_in: int, fan_out: int, rng: np.random.Generator) -> np.ndarray:
     limit = np.sqrt(6.0 / (fan_in + fan_out))
     return rng.uniform(-limit, limit, size=(fan_in, fan_out)).astype(np.float32)
 
-# 激活函数及其反向传播
 def _relu(x: np.ndarray) -> np.ndarray:
-    return np.maximum(x, 0.0)  # relu激活
+    return np.maximum(x, 0.0)
 
 def _relu_backward(grad: np.ndarray, x: np.ndarray) -> np.ndarray:
-    return grad * (x > 0)      # relu反向传播
+    return grad * (x > 0)
 
 def _sigmoid(x: np.ndarray) -> np.ndarray:
     return 1.0 / (1.0 + np.exp(-x))
@@ -30,29 +28,26 @@ def _tanh_backward(grad: np.ndarray, x: np.ndarray) -> np.ndarray:
     t = np.tanh(x)
     return grad * (1.0 - t * t)
 
-# 激活函数字典
 ACTIVATIONS = {
     "relu": (_relu, _relu_backward),
     "sigmoid": (_sigmoid, _sigmoid_backward),
     "tanh": (_tanh, _tanh_backward),
 }
 
-# 前向传播中间变量缓存
 @dataclass
 class ForwardCache:
-    x: np.ndarray      # 输入
-    z1: np.ndarray     # 第一层线性输出
-    a1: np.ndarray     # 第一层激活输出
-    logits: np.ndarray # 最后一层输出（未softmax）
+    x: np.ndarray
+    z1: np.ndarray
+    a1: np.ndarray
+    logits: np.ndarray  # 归一化前的打分
 
-# 单隐藏层感知机模型
 class OneHiddenLayerMLP:
     def __init__(
         self,
-        input_dim: int = 784,      # 输入维度
-        hidden_dim1: int = 256,    # 第一隐藏层维度
-        num_classes: int = 10,     # 输出类别数
-        activation: str = "relu", # 激活函数
+        input_dim: int = 784,
+        hidden_dim1: int = 256,
+        num_classes: int = 10,
+        activation: str = "relu",
         seed: int = 42,
     ) -> None:
         if activation not in ACTIVATIONS:
@@ -62,13 +57,12 @@ class OneHiddenLayerMLP:
         self.act, self.act_backward = ACTIVATIONS[activation]
         rng = np.random.default_rng(seed)
 
-        # 权重和偏置初始化
         self.W1 = _xavier_init(input_dim, hidden_dim1, rng)
         self.b1 = np.zeros((1, hidden_dim1), dtype=np.float32)
         self.W2 = _xavier_init(hidden_dim1, num_classes, rng)
         self.b2 = np.zeros((1, num_classes), dtype=np.float32)
 
-        self.grads: dict[str, np.ndarray] = {}  # 存储梯度
+        self.grads: dict[str, np.ndarray] = {}
 
     def forward(self, x: np.ndarray) -> ForwardCache:
         z1 = x @ self.W1 + self.b1
@@ -82,6 +76,7 @@ class OneHiddenLayerMLP:
 
     @staticmethod
     def _cross_entropy_with_logits(logits: np.ndarray, y: np.ndarray) -> tuple[float, np.ndarray]:
+        # 先减去行最大值，避免指数函数溢出
         shifted = logits - np.max(logits, axis=1, keepdims=True)
         exp_scores = np.exp(shifted)
         probs = exp_scores / np.sum(exp_scores, axis=1, keepdims=True)

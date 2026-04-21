@@ -43,7 +43,7 @@ def main() -> None:
 
     results = []
     best = None
-    best_model_path = None  # 记录最优模型路径
+    best_model_path = None  # 用于清理旧的临时权重文件
 
     import os
     keys = list(grid.keys())
@@ -56,7 +56,7 @@ def main() -> None:
             activation=hp["activation"],
             seed=args.seed,
         )
-        # 每组参数保存到不同临时文件，防止覆盖
+        # 每组参数写到不同临时文件，避免互相覆盖
         tmp_model_path = f"checkpoints/grid_tmp_{idx}.npz"
         cfg = TrainerConfig(
             epochs=args.epochs,
@@ -80,9 +80,8 @@ def main() -> None:
         item = {"config": hp, "best_val_acc": score, "model_path": tmp_model_path}
         results.append(item)
 
-        # 如果当前参数组合更优，则记录最优模型路径，并删除上一个最优模型
         if best is None or score > best["best_val_acc"]:
-            # 删除上一个最优模型（如果有且不是当前文件）
+            # 只保留当前最优对应的权重文件，减少磁盘占用
             if best_model_path is not None and best_model_path != tmp_model_path and os.path.exists(best_model_path):
                 try:
                     os.remove(best_model_path)
@@ -91,7 +90,6 @@ def main() -> None:
             best = item
             best_model_path = tmp_model_path
         else:
-            # 不是最优参数，直接删除模型文件
             if os.path.exists(tmp_model_path):
                 try:
                     os.remove(tmp_model_path)
@@ -102,7 +100,6 @@ def main() -> None:
     with open(args.results_path, "w", encoding="utf-8") as f:
         json.dump({"best": best, "results": results}, f, ensure_ascii=False, indent=2)
 
-    # 将最优模型复制为 checkpoints/best_model.npz
     if best_model_path is not None:
         import shutil
         shutil.copyfile(best_model_path, "checkpoints/best_model.npz")

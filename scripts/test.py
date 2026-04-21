@@ -46,7 +46,6 @@ def main() -> None:
     print("Confusion Matrix:")
     print(cm)
 
-    # 输出混淆矩阵图片
     class_names = [str(i) for i in range(10)]
     save_path = "artifacts/confusion_matrix.png"
     plot_confusion_matrix(cm, class_names, save_path)

@@ -19,7 +19,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--hidden-dim1", type=int, default=256)
     parser.add_argument("--activation", choices=["relu", "sigmoid", "tanh"], default="relu")
     parser.add_argument("--num-filters", type=int, default=64)
-    # 只保留 per_class 选择方式
     parser.add_argument(
         "--selection",
         choices=["per_class"],
@@ -50,18 +49,17 @@ def main() -> None:
     )
     model.load(args.model_path)
 
-    w1 = model.W1.T  # (H, 784)
+    w1 = model.W1.T  # (隐藏单元数, 784)
     n = min(args.num_filters, w1.shape[0])
 
-    # 只保留 per_class 选择方式
-    w2 = model.W2  # (H, C)
+    w2 = model.W2  # (隐藏单元数, 类别数)
     chosen = []
     for c in range(w2.shape[1]):
-        # 对每个类别，找绝对值最大的隐藏单元
+        # 对每个类别，挑一个“最有区分度”的隐藏单元
         j = np.argmax(np.abs(w2[:, c]))
         if j not in chosen:
             chosen.append(j)
-    # 若不足n个，补充贡献度高的
+    # 不足时用“整体贡献度”补齐
     if len(chosen) < n:
         norms = np.linalg.norm(w1, axis=1)
         max_abs_w2 = np.max(np.abs(w2), axis=1)
@@ -87,7 +85,6 @@ def main() -> None:
             else:
                 vmin, vmax = None, None
             ax.imshow(img, cmap=args.cmap, vmin=vmin, vmax=vmax, interpolation="nearest")
-            # 将下标放到图片下方
             ax.set_title(str(i + 1), fontsize=10, pad=4)
 
     plt.suptitle("First Layer Learned Spatial Patterns")
