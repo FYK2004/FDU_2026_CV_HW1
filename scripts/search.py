@@ -43,9 +43,11 @@ def main() -> None:
 
     results = []
     best = None
+    best_model_path = None  # 记录最优模型路径
 
+    import os
     keys = list(grid.keys())
-    for values in itertools.product(*(grid[k] for k in keys)):
+    for idx, values in enumerate(itertools.product(*(grid[k] for k in keys))):
         hp = dict(zip(keys, values))
         print(f"Running config: {hp}")
 
@@ -54,6 +56,8 @@ def main() -> None:
             activation=hp["activation"],
             seed=args.seed,
         )
+        # 每组参数保存到不同临时文件，防止覆盖
+        tmp_model_path = f"checkpoints/grid_tmp_{idx}.npz"
         cfg = TrainerConfig(
             epochs=args.epochs,
             batch_size=args.batch_size,
@@ -61,7 +65,7 @@ def main() -> None:
             lr_decay=0.95,
             weight_decay=hp["weight_decay"],
             seed=args.seed,
-            save_path="checkpoints/grid_tmp_best.npz",
+            save_path=tmp_model_path,
         )
 
         history = train_model(
@@ -73,15 +77,36 @@ def main() -> None:
             cfg,
         )
         score = max(history["val_acc"])
-        item = {"config": hp, "best_val_acc": score}
+        item = {"config": hp, "best_val_acc": score, "model_path": tmp_model_path}
         results.append(item)
 
+        # 如果当前参数组合更优，则记录最优模型路径，并删除上一个最优模型
         if best is None or score > best["best_val_acc"]:
+            # 删除上一个最优模型（如果有且不是当前文件）
+            if best_model_path is not None and best_model_path != tmp_model_path and os.path.exists(best_model_path):
+                try:
+                    os.remove(best_model_path)
+                except Exception as e:
+                    print(f"[WARN] Failed to remove {best_model_path}: {e}")
             best = item
+            best_model_path = tmp_model_path
+        else:
+            # 不是最优参数，直接删除模型文件
+            if os.path.exists(tmp_model_path):
+                try:
+                    os.remove(tmp_model_path)
+                except Exception as e:
+                    print(f"[WARN] Failed to remove {tmp_model_path}: {e}")
 
     Path(args.results_path).parent.mkdir(parents=True, exist_ok=True)
     with open(args.results_path, "w", encoding="utf-8") as f:
         json.dump({"best": best, "results": results}, f, ensure_ascii=False, indent=2)
+
+    # 将最优模型复制为 checkpoints/best_model.npz
+    if best_model_path is not None:
+        import shutil
+        shutil.copyfile(best_model_path, "checkpoints/best_model.npz")
+        print(f"Best model saved to checkpoints/best_model.npz (from {best_model_path})")
 
     print("Best config:")
     print(best)

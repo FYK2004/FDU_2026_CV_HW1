@@ -6,7 +6,8 @@
       "weight_decay": 0.0001,
       "activation": "relu"
     },
-    "best_val_acc": 0.8885
+    "best_val_acc": 0.9025,
+    "model_path": "checkpoints/grid_tmp_19.npz"
   },
   "results": [
     {
@@ -16,7 +17,8 @@
         "weight_decay": 0.0001,
         "activation": "sigmoid"
       },
-      "best_val_acc": 0.8001666666666667
+      "best_val_acc": 0.8358333333333333,
+      "model_path": "checkpoints/grid_tmp_0.npz"
     },
     {
       "config": {
@@ -25,7 +27,8 @@
         "weight_decay": 0.0001,
         "activation": "relu"
       },
-      "best_val_acc": 0.8548333333333333
+      "best_val_acc": 0.8716666666666667,
+      "model_path": "checkpoints/grid_tmp_1.npz"
     },
     {
       "config": {
@@ -34,7 +37,8 @@
         "weight_decay": 0.0001,
         "activation": "tanh"
       },
-      "best_val_acc": 0.8506666666666667
+      "best_val_acc": 0.8688333333333333,
+      "model_path": "checkpoints/grid_tmp_2.npz"
     },
     {
       "config": {
@@ -43,7 +47,8 @@
         "weight_decay": 0.0005,
         "activation": "sigmoid"
       },
-      "best_val_acc": 0.799
+      "best_val_acc": 0.8366666666666667,
+      "model_path": "checkpoints/grid_tmp_3.npz"
     },
     {
       "config": {
@@ -52,7 +57,8 @@
         "weight_decay": 0.0005,
         "activation": "relu"
       },
-      "best_val_acc": 0.854
+      "best_val_acc": 0.8708333333333333,
+      "model_path": "checkpoints/grid_tmp_4.npz"
     },
     {
       "config": {
@@ -61,7 +67,8 @@
         "weight_decay": 0.0005,
         "activation": "tanh"
       },
-      "best_val_acc": 0.8503333333333334
+      "best_val_acc": 0.868,
+      "model_path": "checkpoints/grid_tmp_5.npz"
     },
     {
       "config": {
@@ -70,7 +77,8 @@
         "weight_decay": 0.0001,
         "activation": "sigmoid"
       },
-      "best_val_acc": 0.8075
+      "best_val_acc": 0.8356666666666667,
+      "model_path": "checkpoints/grid_tmp_6.npz"
     },
     {
       "config": {
@@ -79,7 +87,8 @@
         "weight_decay": 0.0001,
         "activation": "relu"
       },
-      "best_val_acc": 0.856
+      "best_val_acc": 0.8736666666666667,
+      "model_path": "checkpoints/grid_tmp_7.npz"
     },
     {
       "config": {
@@ -88,7 +97,8 @@
         "weight_decay": 0.0001,
         "activation": "tanh"
       },
-      "best_val_acc": 0.851
+      "best_val_acc": 0.8671666666666666,
+      "model_path": "checkpoints/grid_tmp_8.npz"
     },
     {
       "config": {
@@ -97,7 +107,8 @@
         "weight_decay": 0.0005,
         "activation": "sigmoid"
       },
-      "best_val_acc": 0.8063333333333333
+      "best_val_acc": 0.8341666666666666,
+      "model_path": "checkpoints/grid_tmp_9.npz"
     },
     {
       "config": {
@@ -106,7 +117,8 @@
         "weight_decay": 0.0005,
         "activation": "relu"
       },
-      "best_val_acc": 0.8555
+      "best_val_acc": 0.8725,
+      "model_path": "checkpoints/grid_tmp_10.npz"
     },
     {
       "config": {
@@ -115,7 +127,8 @@
         "weight_decay": 0.0005,
         "activation": "tanh"
       },
-      "best_val_acc": 0.8505
+      "best_val_acc": 0.8656666666666667,
+      "model_path": "checkpoints/grid_tmp_11.npz"
     },
     {
       "config": {
@@ -124,7 +137,8 @@
         "weight_decay": 0.0001,
         "activation": "sigmoid"
       },
-      "best_val_acc": 0.8486666666666667
+      "best_val_acc": 0.8658333333333333,
+      "model_path": "checkpoints/grid_tmp_12.npz"
     },
     {
       "config": {
@@ -133,7 +147,8 @@
         "weight_decay": 0.0001,
         "activation": "relu"
       },
-      "best_val_acc": 0.8856666666666667
+      "best_val_acc": 0.9,
+      "model_path": "checkpoints/grid_tmp_13.npz"
     },
     {
       "config": {
@@ -142,7 +157,8 @@
         "weight_decay": 0.0001,
         "activation": "tanh"
       },
-      "best_val_acc": 0.8793333333333333
+      "best_val_acc": 0.8958333333333334,
+      "model_path": "checkpoints/grid_tmp_14.npz"
     },
     {
       "config": {
@@ -151,7 +167,8 @@
         "weight_decay": 0.0005,
         "activation": "sigmoid"
       },
-      "best_val_acc": 0.8471666666666666
+      "best_val_acc": 0.8615,
+      "model_path": "checkpoints/grid_tmp_15.npz"
     },
     {
       "config": {
@@ -160,7 +177,8 @@
         "weight_decay": 0.0005,
         "activation": "relu"
       },
-      "best_val_acc": 0.8835
+      "best_val_acc": 0.8993333333333333,
+      "model_path": "checkpoints/grid_tmp_16.npz"
     },
     {
       "config": {
@@ -169,7 +187,8 @@
         "weight_decay": 0.0005,
         "activation": "tanh"
       },
-      "best_val_acc": 0.8783333333333333
+      "best_val_acc": 0.8926666666666667,
+      "model_path": "checkpoints/grid_tmp_17.npz"
     },
     {
       "config": {
@@ -178,7 +197,8 @@
         "weight_decay": 0.0001,
         "activation": "sigmoid"
       },
-      "best_val_acc": 0.8495
+      "best_val_acc": 0.8645,
+      "model_path": "checkpoints/grid_tmp_18.npz"
     },
     {
       "config": {
@@ -187,7 +207,8 @@
         "weight_decay": 0.0001,
         "activation": "relu"
       },
-      "best_val_acc": 0.8885
+      "best_val_acc": 0.9025,
+      "model_path": "checkpoints/grid_tmp_19.npz"
     },
     {
       "config": {
@@ -196,7 +217,8 @@
         "weight_decay": 0.0001,
         "activation": "tanh"
       },
-      "best_val_acc": 0.8813333333333333
+      "best_val_acc": 0.8951666666666667,
+      "model_path": "checkpoints/grid_tmp_20.npz"
     },
     {
       "config": {
@@ -205,7 +227,8 @@
         "weight_decay": 0.0005,
         "activation": "sigmoid"
       },
-      "best_val_acc": 0.8473333333333334
+      "best_val_acc": 0.8596666666666667,
+      "model_path": "checkpoints/grid_tmp_21.npz"
     },
     {
       "config": {
@@ -214,7 +237,8 @@
         "weight_decay": 0.0005,
         "activation": "relu"
       },
-      "best_val_acc": 0.8881666666666667
+      "best_val_acc": 0.9005,
+      "model_path": "checkpoints/grid_tmp_22.npz"
     },
     {
       "config": {
@@ -223,7 +247,8 @@
         "weight_decay": 0.0005,
         "activation": "tanh"
       },
-      "best_val_acc": 0.8763333333333333
+      "best_val_acc": 0.8935,
+      "model_path": "checkpoints/grid_tmp_23.npz"
     }
   ]
 }

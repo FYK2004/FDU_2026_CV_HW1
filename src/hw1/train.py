@@ -8,6 +8,19 @@ import numpy as np
 from .evaluate import evaluate_model
 from .model import OneHiddenLayerMLP
 
+# ---- LR scheduler helpers ----
+def _lr_exp(base_lr: float, lr_decay: float, epoch: int, min_lr: float) -> float:
+    return max(base_lr * (lr_decay**epoch), min_lr)
+
+
+def _lr_cosine(base_lr: float, epoch: int, total_epochs: int, min_lr: float) -> float:
+    # Cosine annealing from base_lr to min_lr.
+    if total_epochs <= 1:
+        return max(base_lr, min_lr)
+    t = epoch / float(total_epochs - 1)  # 0 -> 1
+    return float(min_lr + 0.5 * (base_lr - min_lr) * (1.0 + np.cos(np.pi * t)))
+
+
 # 训练器配置，包含训练超参数
 @dataclass
 class TrainerConfig:
@@ -15,6 +28,8 @@ class TrainerConfig:
     batch_size: int = 128      # 每批样本数
     learning_rate: float = 0.05
     lr_decay: float = 0.95     # 学习率衰减
+    lr_schedule: str = "cosine"  # exp/cosine
+    min_lr: float = 1e-5
     weight_decay: float = 1e-4 # L2正则
     seed: int = 42
     save_path: str = "checkpoints/best_model.npz"  # 最优模型保存路径
@@ -53,9 +68,13 @@ def train_model(
     save_path = Path(cfg.save_path)
     save_path.parent.mkdir(parents=True, exist_ok=True)
 
-    min_lr = 1e-5
     for epoch in range(cfg.epochs):
-        lr = max(cfg.learning_rate * (cfg.lr_decay ** epoch), min_lr)  # 学习率衰减，设下限
+        if cfg.lr_schedule == "exp":
+            lr = _lr_exp(cfg.learning_rate, cfg.lr_decay, epoch, cfg.min_lr)
+        elif cfg.lr_schedule == "cosine":
+            lr = _lr_cosine(cfg.learning_rate, epoch, cfg.epochs, cfg.min_lr)
+        else:
+            raise ValueError(f"Unsupported lr_schedule: {cfg.lr_schedule}")
         losses = []
 
         # 遍历所有小批量

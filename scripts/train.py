@@ -22,6 +22,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--batch-size", type=int, default=128)
     parser.add_argument("--learning-rate", type=float, default=0.05)
     parser.add_argument("--lr-decay", type=float, default=0.95)
+    parser.add_argument("--lr-schedule", choices=["exp", "cosine"], default="cosine")
+    parser.add_argument("--min-lr", type=float, default=1e-5)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
     parser.add_argument("--hidden-dim1", type=int, default=256)
     parser.add_argument("--activation", choices=["relu", "sigmoid", "tanh"], default="relu")
@@ -71,6 +73,8 @@ def main() -> None:
         batch_size=args.batch_size,
         learning_rate=args.learning_rate,
         lr_decay=args.lr_decay,
+        lr_schedule=args.lr_schedule,
+        min_lr=args.min_lr,
         weight_decay=args.weight_decay,
         seed=args.seed,
         save_path=args.save_path,
